@@ -1,6 +1,10 @@
 package com.thatoneperson.squadblockmod;
 
 import com.mojang.logging.LogUtils;
+import com.thatoneperson.squadblockmod.block.ModBlocks;
+import com.thatoneperson.squadblockmod.item.ModCreativeModeTabs;
+import com.thatoneperson.squadblockmod.item.ModItems;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -38,17 +42,38 @@ public class SquadBlockMod
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
+
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
+        modEventBus.addListener(this::addCreative);
+
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
      
+    }
+
+    private void addCreative(CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ModItems.SQUAD_STONE);
+        }
+
+        if(event.getTab() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.accept(ModBlocks.EVERM_BLOCK);
+        }
+
+        if(event.getTab() == ModCreativeModeTabs.SQUAD_TAB) {
+            event.accept(ModItems.SQUAD_STONE);
+
+            event.accept(ModBlocks.EVERM_BLOCK);
+        }
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
